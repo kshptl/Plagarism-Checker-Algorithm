@@ -7,8 +7,16 @@ Created on Thu Oct  5 12:55:13 2017
 """
 
 def _jaccard_similarity(s1, s2):
-    # YOU NEED TO IMPLEMENT THIS
-    return 0.5
+    intersect = s1.intersection(s2)
+    union = s1.union(s2)
+    jaccard_similarity = len(intersect)/len(union)
+#    intersect = 0 # This variable holds the number of values that insersect between the two sets.
+#    for i in s1:
+#        if i in s2:
+#            intersect = intersect + 1 # Loop through all values in the first set (s1) and see if they are in the second set (s2), #if so increment by 1.
+#    newSet = set(s1 + s2) # add the two sets together and return only the unique values.
+#    jaccard_similarlity = (intersect/len(newSet)) # calculate jaccard similarity by diving the number of values that intersected #by the total number of unique values in both sets)
+    return jaccard_similarity
 
 class Jaccard:
     def __init__(self):
