@@ -32,7 +32,8 @@ def _choose_nbands(t, n):
     
     opt_res = opt.minimize(_error_fun, x0=(10), method='Nelder-Mead')
     b = int(math.ceil(opt_res['x'][0]))
-    r = int(n / b)
+    r = math.ceil(n/b) #int(n / b)
+    #print('n = %d, r = %d, b = %d' % (n,r,b))
     final_t = (1/b)**(1/r)
     return b, final_t
 
@@ -51,12 +52,50 @@ def _do_lsh(mh_matrix, threshold):
     
     # initalize list of hashtables, will be populated with one hashtable
     # per band
-    buckets = []
+    hashtables = []
     
     # fill hash tables for each band
     for band in range(b):
-       # FINISH IMPLEMENTING THIS LOOP
-    return buckets
+        
+        # initialize band list that will contain buckets
+        b = {}
+        
+        # create buckets (dictionaries) inside band list based on number of documents
+        for doc in range(1,ndocs+1):
+            b[doc] = []
+
+        # calculate hashes for each document in the band
+        calc_hash = []
+        for doc in range(ndocs):
+            hashes = []
+            row = band*r
+
+            # while the row is within this band and also isn't going over the end of total rows
+            # get the hashes of the doc into one list
+            while (row < (band+1)*r and row < n):
+                hashes.append(mh_matrix._mat[row][doc])
+                row = row + 1
+            calc_hash.append(hash_func(hashes))
+
+        # sort hashes
+        if len(calc_hash) > 1:
+            calc_hash.sort()
+        
+        #keep track of last bucket that was was added to
+        bucketCount = 1
+
+        # add the hashes into buckets, if the hash is the same as the previous hash, add it to the same bucket
+        for idx, h in enumerate(calc_hash):
+            if h == calc_hash[idx-1]:
+                b[bucketCount-1].append(h)
+            else:
+                b[bucketCount].append(h)
+                bucketCount = bucketCount + 1
+            
+        # add the list of hashtables for the band into the list of "buckets"
+        hashtables.append(b) 
+    #print(hashtables[-1][1])
+    return hashtables
         
 def _get_candidates(hashtables):
     candidates = set()

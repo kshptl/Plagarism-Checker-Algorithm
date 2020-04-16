@@ -63,7 +63,7 @@ def run(exp_data, exp_df, hash_vals=[10,20,50,100,1000]):
     # invert the shingled articles so we can iterate over
     # shingles 
     inv_data = invert_shingles(exp_data)
-    
+
     # for each of the number of hashes used in experiment
     for num_hash in hash_vals:
         print("Doing minhash for ", num_hash, " hashes")

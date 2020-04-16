@@ -69,9 +69,19 @@ def _make_minhash_sigmatrix(shingled_data, num_hashes, inverted=False):
     
     # iterate over shingles 
     for s, docid in inv_index:
+        hashvals = [f(s) for f in hash_funcs if s != last_s] # Compute hash functions for the shingle
+        last_s = s # update last_s
         
-        ## IMPLEMENT THIS LOOP!!!
-        
+        for idx, new_hash in enumerate(hashvals):
+            # get the current hash
+            current_hash = sigmat[idx][docids.index(docid)]
+
+            # if the new hash is smaller than the current hash, overwrite it
+            sigmat[idx][docids.index(docid)] = new_hash if new_hash < current_hash else current_hash 
+            
+    #print(s,docid)
+    #from pprint import pprint
+    #pprint(sigmat)
     return sigmat, docids
 
 
@@ -109,8 +119,21 @@ class MinHash:
     def get_similarity(self, di, dj):
         i = self._docids.index(di)
         j = self._docids.index(dj)
-        # FINISH IMPLEMENTING THIS!!!
-        return 0.5
+        
+        # get all the hashes for the two docs into two lists
+        hash_i = [row[i] for row in self._mat]
+        hash_j = [row[j] for row in self._mat]
+        
+        # variable to hold the number of hashes that match
+        same = 0
+
+        # go through hashes, if any pair are the same increment "same" by 1
+        for idx, h in enumerate(hash_i):
+            same = same + 1 if hash_i[idx] == hash_j[idx] else same
+        
+        similarity = same / len(hash_i)
+          
+        return similarity
     
     def save_matrix(self, file):
         np.save(file, self._mat)
